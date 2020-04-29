@@ -70,8 +70,19 @@
         </g:if>
 
         <g:if test="${orderInstance?.id}">
+            <g:isUserInRole roles="[org.pih.warehouse.core.RoleType.ROLE_APPROVER]">
+                <g:set var="isApprover" value="true" />
+            </g:isUserInRole>
+            <g:if test="${!isApprover}">
+                <g:set var="disabledMessage" value="${g.message(code:'errors.noPermissions.label')}"/>
+            </g:if>
+            <g:elseif test="${orderInstance?.shipments}">
+                <g:set var="disabledMessage" value="${g.message(code:'order.errors.rollback.message')}"/>
+            </g:elseif>
             <g:isSuperuser>
-                <g:link controller="order" action="rollbackOrderStatus" id="${orderInstance?.id}" class="button">
+                <g:link controller="order" action="rollbackOrderStatus" id="${orderInstance?.id}" class="button"
+                        disabled="${orderInstance?.shipments || !isApprover}"
+                        disabledMessage="${disabledMessage}">
                     <img src="${resource(dir: 'images/icons/silk', file: 'arrow_undo.png')}" />&nbsp;
                     ${warehouse.message(code: 'default.button.rollback.label')}
                 </g:link>
