@@ -56,6 +56,9 @@
 <div class="buttonBar">
 
     <div class="button-container">
+        <g:isUserInRole roles="[org.pih.warehouse.core.RoleType.ROLE_APPROVER]">
+            <g:set var="isApprover" value="true" />
+        </g:isUserInRole>
 
         <g:link controller="order" action="list" class="button">
             <img src="${resource(dir: 'images/icons/silk', file: 'application_view_list.png')}" />&nbsp;
@@ -100,7 +103,9 @@
                 </g:elseif>
             </div>
             <div class="button-group">
-                <g:link controller="order" action="addAdjustment" id="${orderInstance?.id}" class="button">
+                <g:link controller="order" action="addAdjustment" id="${orderInstance?.id}" class="button"
+                        disabled="${orderInstance?.status >= OrderStatus.PLACED && !isApprover}"
+                        disabledMessage="${g.message(code:'errors.noPermissions.label')}">
                     <img src="${resource(dir: 'images/icons/silk', file: 'basket_put.png')}" />&nbsp;
                     <warehouse:message code="default.add.label" args="[g.message(code: 'orderAdjustment.label')]"/>
                 </g:link>

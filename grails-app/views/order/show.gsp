@@ -1,5 +1,6 @@
 <%@ page import="org.pih.warehouse.order.Order" %>
 <%@ page import="org.pih.warehouse.order.OrderTypeCode" %>
+<%@ page import="org.pih.warehouse.order.OrderStatus" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -343,12 +344,19 @@
                                                         </g:elseif>
                                                     </td>
                                                     <td class="right">
-                                                        <g:link action="editAdjustment" id="${orderAdjustment.id}" params="['order.id':orderInstance?.id]" class="button">
+                                                        <g:isUserInRole roles="[org.pih.warehouse.core.RoleType.ROLE_APPROVER]">
+                                                            <g:set var="isApprover" value="true" />
+                                                        </g:isUserInRole>
+                                                        <g:link action="editAdjustment" id="${orderAdjustment.id}" params="['order.id':orderInstance?.id]" class="button"
+                                                                disabled="${orderInstance?.status >= OrderStatus.PLACED && !isApprover}"
+                                                                disabledMessage="${g.message(code:'errors.noPermissions.label')}">
                                                             <img src="${createLinkTo(dir:'images/icons/silk',file:'pencil.png')}" alt="Edit" />
                                                             <g:message code="default.button.edit.label"/>
                                                         </g:link>
 
                                                         <g:link action="deleteAdjustment" id="${orderAdjustment.id}" params="['order.id':orderInstance?.id]" class="button"
+                                                                disabled="${orderInstance?.status >= OrderStatus.PLACED && !isApprover}"
+                                                                disabledMessage="${g.message(code:'errors.noPermissions.label')}"
                                                                 onclick="return confirm('${warehouse.message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');">
                                                             <img src="${createLinkTo(dir:'images/icons/silk',file:'delete.png')}" alt="Delete" />
                                                             <g:message code="default.button.delete.label"/>

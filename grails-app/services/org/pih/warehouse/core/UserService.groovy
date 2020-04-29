@@ -171,11 +171,10 @@ class UserService {
 
 
     Boolean isUserInRole(String userId, Collection roleTypes) {
-        Collection acceptedRoleTypes = RoleType.expand(roleTypes)
         User user = getUser(userId)
         return getEffectiveRoles(user).any { Role role ->
-            boolean acceptedRoleType = acceptedRoleTypes.contains(role.roleType)
-            log.info "Is role ${role.roleType} in ${acceptedRoleTypes} = ${acceptedRoleType}"
+            boolean acceptedRoleType = roleTypes.contains(role.roleType)
+            log.info "Is role ${role.roleType} in ${roleTypes} = ${acceptedRoleType}"
             return acceptedRoleType
         }
     }
